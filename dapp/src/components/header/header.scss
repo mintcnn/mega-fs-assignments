@@ -1,0 +1,27 @@
+@import '../../styles/index.scss';
+
+.main-app {
+    padding: 12px 20px;
+    background-color: $primary-color;
+    color: white;
+    .title-header {
+        color: #555BAE;
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+    }
+    .ant-btn {
+        border-radius: 16px;
+        box-shadow: rgb(14 14 44 / 40%) 0px -1px 0px 0px inset;
+        transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
+        background-color: rgb(31, 199, 212);
+        color: white;
+        border: none;
+        height: 36px;
+        font-weight: 600;
+        font-size: 16px;
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+}

@@ -1,0 +1,45 @@
+@import '../../styles/index.scss';
+
+.tab-menu {
+    background-color: $primary-light;
+    padding: 30px;
+    .ant-menu-horizontal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border-radius: 16px;
+        border: none;
+        padding: 10px 10px;
+        width: min-content;
+        margin: 0 auto;
+        gap: 4px;
+        .ant-menu-item {
+            border-radius: 16px;
+            border: none;
+            a {
+                color: $primary-text;
+                font-size: 16px;
+            }
+            &:hover {
+                background-color: rgb(231, 248, 252);
+            }
+        }
+        .ant-menu-horizontal {
+            border-bottom: none;
+        }
+        .ant-menu-item-selected {
+            background-color: rgb(187, 242, 255);
+            &::after {
+                border-bottom: none !important;
+            }
+        }
+        .ant-menu-item-selected a, .ant-menu-item-selected a:hover {
+            color: $primary-text;
+        }
+    }
+    .ant-menu-horizontal > .ant-menu-item::after, .ant-menu-horizontal > .ant-menu-submenu::after {
+        border-bottom: none !important;
+    }
+    
+}
