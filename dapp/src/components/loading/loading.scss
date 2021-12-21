@@ -1,0 +1,14 @@
+@import '../../styles/index.scss';
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 250px;
+    color: $primary-text;
+    h3 {
+        color: $primary-text;
+    }
+}

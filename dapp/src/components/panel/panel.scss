@@ -1,0 +1,58 @@
+@import '../../styles/index.scss';
+
+.panel-container {
+    margin: 40px 20%;
+    min-width: 350px;
+    &.ant-card {
+        border-radius: 16px;
+        .ant-card-head {
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            background-color: rgb(31, 199, 212);
+            border: none;
+            transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
+            .ant-card-head-title {
+                text-transform: capitalize;
+                color: white;
+            }
+        }
+        .ant-input-number-group-wrapper {
+            width: 100%;
+            .ant-input-number-input {
+                text-align: left;
+            }
+            .ant-input-number {
+                margin-left: 5px;
+            }
+        }
+        .balance-section {
+            color: rgb(145, 149, 163);
+            margin-bottom: 4px;
+        }
+        .receiving-section {
+            margin: 12px 0px 30px 0px;
+            color: rgb(145, 149, 163);
+        }
+        .ant-btn {
+            width: 100%;
+            color: white;
+            border-radius: 16px;
+            font-size: 16px;
+            height: 40px;
+            background-color: rgb(31, 199, 212);
+            border: none;
+            span {
+                text-transform: capitalize;
+            }
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+        .ant-space-align-center {
+            width: 100%;
+            justify-content: center;
+            gap: 10px;
+        }
+    }
+    
+}

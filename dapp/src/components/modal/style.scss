@@ -1,0 +1,16 @@
+
+.ant-modal-content {
+    button {
+        color: white;
+        border-radius: 16px;
+        font-size: 16px;
+        height: 40px;
+        background-color: rgb(31, 199, 212);
+        border: none;
+        &:focus, &:hover {
+            opacity: 0.8;
+            background-color: rgb(31, 199, 212);
+            border: none;
+        }
+    }
+}
