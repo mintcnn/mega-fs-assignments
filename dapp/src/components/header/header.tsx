@@ -1,5 +1,5 @@
 // lib
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { Row, Col, Button } from 'antd'
 import { useWeb3React } from "@web3-react/core"
 // helper
@@ -14,23 +14,7 @@ declare global {
 }
 
 const Landing: React.FC = () => {
-    const { account, active: networkActive, error: networkError, activate: activateNetwork, library } = useWeb3React()
-
-    // web3modal
-    const connectWalletHandler = async () => {
-        const { ethereum } = window
-
-        if (!ethereum) {
-            alert('Please install Metamask')
-        }
-
-        try {
-            const accounts = await ethereum.request({ method: "eth_requestAccounts"})
-            console.log('found an account, address: ', accounts[0])
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    const { activate: activateNetwork } = useWeb3React()
 
     const connectWalletButton = () => {
         return (
@@ -42,7 +26,12 @@ const Landing: React.FC = () => {
 
     async function connect() {
         try {
-            console.log('connect')
+            const { ethereum } = window
+
+            if (!ethereum) {
+                alert('Please install Metamask')
+            }
+            console.log('header connect')
             await activateNetwork(injected)
         } catch (ex) {
           console.log(ex)

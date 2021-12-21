@@ -5,6 +5,9 @@ import StatGroup from "./stat/statGroup";
 import Panel from "./panel/panel";
 import Web3Manager from "./Web3Manager";
 
+import SuccessModal from "./modal/successModal";
+import Loader from "./loading/loading";
+
 export {
     Header,
     TabBar,
@@ -12,4 +15,6 @@ export {
     StatGroup,
     Panel,
     Web3Manager,
+    SuccessModal,
+    Loader,
 }

@@ -1,88 +1,101 @@
 import { useWeb3React } from "@web3-react/core"
 import React, { useState, useEffect, useContext } from "react"
-import { Contract, ContractOptions } from 'web3-eth-contract';
-
-import Web3 from "web3"
-
+import { Select } from "antd";
 // component
-import { StatGroup, Panel } from "../../components"
-// constant
-import { abiJson, contractAddress } from "../../constants"
-import { ContractContext, DecimalContext } from "../../helpers/context";
+import { StatGroup, Panel, SuccessModal } from "../../components"
+import ErrorModal from "../../components/modal/errorModal";
 // helper
-import { etherToWei } from "../../utils/convertor";
+import { ContractContext, DecimalContext } from "../../helpers/context";
+import { Web3Utils } from '../../helpers/web3Service';
 
 const Supply: React.FC = () => {
-    const ethDecimals = 18;
-
-    const web3 = new Web3(Web3.givenProvider)
     const { account, library } = useWeb3React()
-    const [contacts, setContacts] = useState<Contract>();
     const decimal = useContext(DecimalContext)
     const contract = useContext(ContractContext)
 
     // data
     const [supply, setSupply] = useState<number>(0)
     const [supplyReceiving, setSupplyReceiving] = useState<number>(0)
-    const [currentToken, setCurrentToken] = useState<number>(0)
+    const [maximumToken, setMaximumToken] = useState<number>(0)
 
-    const [loading, setLoading] = useState<boolean>(false)
+    const [successVisible, setSuccessVisible] = useState<boolean>(false)
+    const [ErrorVisible, setErrorVisible] = useState<boolean>(false)
+
+    const tokenSupplyOption = (
+        <Select defaultValue="etherium">
+            <Select.Option value="etherium">ETH</Select.Option>
+        </Select>
+    )
 
     const getBalance = async () => {
-        // const currentAccount = await web3.eth.getAccounts()
-        // if (currentAccount) {
-        //     let ethBalance = await web3.eth.getBalance(currentAccount[0]) 
-        //     setCurrentToken(parseInt(ethBalance) / Math.pow(10, ethDecimals))
-        //     console.log(ethBalance)
-        // }
-        if (account) {
-            let ethBalance = await web3.eth.getBalance(account) 
-            setCurrentToken(parseInt(ethBalance) / Math.pow(10, ethDecimals))
-            console.log(ethBalance)
+        if (library && account) {
+            const balanceOfWallet = await Web3Utils.getBalanceOfWallet(library, account)
+            setMaximumToken(balanceOfWallet)
         }
     }
 
     const getReceivingToken = async () => {
-        if (contract) {
-            var currentDecimal = decimal?.state || 8
-            let exchangeRateCurrent = await contract.state?.methods.exchangeRateCurrent().call();
-            exchangeRateCurrent = exchangeRateCurrent / Math.pow(10, 18 + ethDecimals - currentDecimal);
-    
-            const receivingToken = (etherToWei(web3, supply) / exchangeRateCurrent)/1e18
+        const currentContract = contract?.state
+        const currentDecimal = decimal?.state || 8
+
+        if (currentContract) {
+            const exchangeRateCurrent = await Web3Utils.getExchangeRate(currentContract, currentDecimal)
+
+            // eth / exchange rate = ceth
+            const receivingToken = supply / exchangeRateCurrent
             setSupplyReceiving(parseFloat(receivingToken.toFixed(5)))
         }
     }
 
     const supplyEth = async () => {
-        const currentAccount = await web3.eth.getAccounts()
-
-        const value = web3.utils.toHex(web3.utils.toWei(supply.toString(), 'ether'))
-        console.log('value', value)
-        const mintEth = await contract?.state?.methods.mint().send({
-            from: currentAccount[0],
-            value: value
-        })
-        console.log(mintEth)
+        const currentContract = contract?.state
+        try {
+            if (!currentContract) throw Error("Contract Not Found")
+            if (!account) throw Error("Account Not Fount")
+            await Web3Utils.mintToken(library, currentContract, account, supply)
+            SuccessModal({ 
+                title: 'Supply token success', 
+                visible: successVisible, 
+                setVisible: setSuccessVisible,
+                onOk: () => {
+                    setSuccessVisible(false)
+                    window.location.reload()
+                } 
+            })
+        } catch (error) {
+            ErrorModal({
+                title: 'Supply token error',
+                visible: ErrorVisible,
+                setVisible: setErrorVisible,
+                onOk: () => {
+                    setSuccessVisible(false)
+                } 
+            })
+        } 
     }
 
+    /* eslint-disable */
     useEffect(() => {
         getReceivingToken()
         getBalance()
-    }, [])
+    }, [contract?.state, account])
 
     useEffect(() => {
         getReceivingToken()
     }, [supply])
+    /* eslint-enable */
 
     return (
         <div className="container">
+            <StatGroup />
             <div className="panel-section">
                 <Panel 
                     mode="supply" 
+                    tokenOption={tokenSupplyOption}
                     value={supply} 
                     setValue={setSupply} 
                     receiving={supplyReceiving} 
-                    maximumToken={currentToken}
+                    maximumToken={maximumToken}
                     onClickButton={supplyEth}
                 />
             </div>

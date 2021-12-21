@@ -1,25 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Row, Col, Card } from 'antd'
+import { Row, Col } from 'antd'
 import { Stat } from '..'
 import { useWeb3React } from '@web3-react/core'
 import { ContractContext, DecimalContext } from '../../helpers/context';
-import Web3 from 'web3';
-import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
-import { Web3Utils } from '../../utils';
+import { Web3Utils } from '../../helpers/web3Service';
 
-interface IStatGroup {
-    // supplied: number | undefined
-    // totalSupplied: number | undefined
-    // apy: string | undefined
-    // loading: boolean
-}
 
-const StatGroup: React.FC<IStatGroup> = ({ 
-    // supplied, totalSupplied, apy, loading 
-}) => {
-    const web3 = new Web3(Web3.givenProvider)
-
-    const { account, library, connector } = useWeb3React<Web3ReactContextInterface>()
+const StatGroup: React.FC = () => {
+    const { account, library } = useWeb3React()
     const contract = useContext(ContractContext)
     const decimal = useContext(DecimalContext)
 
@@ -28,66 +16,47 @@ const StatGroup: React.FC<IStatGroup> = ({
     const [totalSupplied, setTotalSuppliedStat] = useState<number | undefined>(undefined)
     const [apyStat, setApyStat] = useState<number | undefined>(undefined)
 
-    const [loading, setLoading] = useState<boolean>(false)
-
     const fetchState = async () => {
         const currentContract = contract?.state
         const currentDecimal = decimal?.state || 8
-        const currentAccount = await web3.eth.getAccounts()
 
-        console.log('fetch state', currentContract, account, connector, library)
-        if (currentContract && account) {
-            const totalSupply = await Web3Utils.getTotalSupply(currentContract)
+        if (currentContract && account && library) {
+            const totalSupply = await Web3Utils.getTotalSupply(currentContract, currentDecimal)
             setTotalSuppliedStat(totalSupply)
 
             const balanceOf = await Web3Utils.getBalanceOfAccount(currentContract, account, currentDecimal)
             setSuppliedStat(balanceOf)
 
-            const apy = await Web3Utils.getApy(web3, currentContract, currentDecimal)
+            const apy = await Web3Utils.getApy(library, currentContract, currentDecimal)
             setApyStat(apy)
-            console.log('apy', apy)
         }
-
-        // fetch total supplied
-        // const totalSupply = await contract?.state?.methods.totalSupply().call()
-        // console.log('total',totalSupply)
-        // setTotalSuppliedStat(totalSupply)
-        // console.log('library', library)
-        // const totalSupply = await library?.totalSupply().call()
-        // console.log('total',totalSupply)
-        // setTotalSuppliedStat(totalSupply)
-
-
-        // fetch balance of owner supplied
-        // if (currentAccount) {
-        //     const balanceOf = await contract?.state?.methods.balanceOf(currentAccount[0]).call()
-        //     const accountSupply = balanceOf / Math.pow(10, currentDecimal);
-        //     console.log('balanceOf', balanceOf)
-        //     setSuppliedStat(accountSupply)
-        // }
-            // fetch APY
     }
 
+    /* eslint-disable */
     useEffect(() => {
         fetchState()
-    }, [contract, account])
-
-    
+    }, [contract?.state, account])
+    /* eslint-enable */
 
     const renderStat = () => {
         const statList = [
-            { title: "Your Supplied", value: suppliedStat },
-            { title: "Total Supplied", value: totalSupplied },
-            { title: "APY", value: apyStat },
+            { title: "Your Supplied", suffix: '', value: suppliedStat },
+            { title: "Total Supplied", suffix: '', value: totalSupplied },
+            { title: "APY", suffix: '%', value: apyStat?.toFixed(2) },
         ]
-        console.log(statList)
-        const statColumn = statList.map((statItem) => (
-            <Col span={8}>
-                <Stat key={statItem.title} title={statItem.title} value={statItem.value} loading={loading} />
+        const statColumn = statList.map((statItem, index) => (
+            <Col span={8} key={`${index}-${statItem.title}`}>
+                <Stat 
+                    title={statItem.title} 
+                    value={statItem.value} 
+                    loading={typeof statItem.value != 'undefined' ? false: true}
+                    suffix={statItem.suffix}
+                />
             </Col>
         ))
         return statColumn
     }
+    
     return (
         <Row gutter={40}>
             {renderStat()}

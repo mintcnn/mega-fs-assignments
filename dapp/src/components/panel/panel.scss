@@ -16,12 +16,18 @@
                 color: white;
             }
         }
-        .ant-input-number-input {
-            text-align: left;
+        .ant-input-number-group-wrapper {
+            width: 100%;
+            .ant-input-number-input {
+                text-align: left;
+            }
+            .ant-input-number {
+                margin-left: 5px;
+            }
         }
-        .ant-input-number {
-            margin-left: 5px;
-            // width: calc(100% - 32px - 24px - 15px);
+        .balance-section {
+            color: rgb(145, 149, 163);
+            margin-bottom: 4px;
         }
         .receiving-section {
             margin: 12px 0px 30px 0px;

@@ -1,11 +1,9 @@
 import { useWeb3React } from "@web3-react/core";
 import { useContext, useEffect } from "react";
 import { abiJson, contractAddress } from "../../constants";
-import Web3 from "web3";
 
 // helper
 import { injected } from "../../helpers/wallet/connectors"
-import { ContractReducer, DecimalReducer } from "../../helpers/reducer";
 import { ContractContext, DecimalContext } from "../../helpers/context";
 
 interface IWeb3Manager {
@@ -13,18 +11,13 @@ interface IWeb3Manager {
 }
 
 const Web3Manager: React.FC<IWeb3Manager> = ({ children }) => {
-    let web3 = new Web3(Web3.givenProvider)
-
-    // const web3 = new Web3(Web3.givenProvider)
-    const { account, library, active, activate, error, connector } = useWeb3React()
+    const { account, library, active, activate, error } = useWeb3React()
     const contract = useContext(ContractContext)
     const decimal = useContext(DecimalContext)
 
-    console.log('account', account, library, connector)
-
     const getInitState = async () => {
         // set contract
-        const web3Contract = new web3.eth.Contract(abiJson, contractAddress);
+        const web3Contract = new library.eth.Contract(abiJson, contractAddress);
         contract?.dispatch({
             type: 'SET',
             payload: web3Contract
@@ -36,49 +29,30 @@ const Web3Manager: React.FC<IWeb3Manager> = ({ children }) => {
             payload: decimalContract
         })
     }
-    
-    const connectWalletHandler = async () => {
-        const { ethereum } = window
-
-        if (!ethereum) {
-            alert('Please install Metamask')
-        }
-
-        try {
-            const accounts = await ethereum.request({ method: "eth_requestAccounts"})
-            console.log('found an account, address: ', accounts[0])
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     async function connect() {
         try {
-            // let web3 = new Web3(Web3.givenProvider)
-
-            console.log('connect')
+            console.log('connect to metamask...')
             await activate(injected)
-            let { provider } = await injected.activate();
-            // signer
-            web3 = new Web3(provider); 
-        } catch (ex) {
-          console.log(ex)
+            await injected.activate();
+        } catch (error) {
+          console.log(error)
         }
     }
 
-    // useEagerConnect() ?
+    /* eslint-disable */
     useEffect(() => {
         if (!active && !error) {
-            console.log('activate')
-            // connectWalletHandler()
             connect()
-            // activate(injected)
         }
       }, [active, error, activate])
 
     useEffect(() => {
-        getInitState()
-    }, [])
+        if (library && !contract?.state) {
+            getInitState()
+        }
+    }, [library])
+    /* eslint-enable */
 
     if (!account) {
         return (

@@ -20,7 +20,6 @@ export const ContractReducer = (
 ): Contract | null => {
     switch(action.type) {
         case 'SET':
-            console.log('set contract', action.payload)
             return action.payload
         default:
             return state

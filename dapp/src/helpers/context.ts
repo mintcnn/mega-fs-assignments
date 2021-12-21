@@ -1,6 +1,4 @@
 import React from "react"
-import { Contract } from 'web3-eth-contract';
-
 import { IDecimal, IContract } from "./interface"
 
 
