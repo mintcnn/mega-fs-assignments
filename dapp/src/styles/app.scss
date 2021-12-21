@@ -1,0 +1,36 @@
+@import './index.scss';
+
+#root {
+    height: 100%;
+}
+
+html {
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgb(204, 204, 204);
+        border-radius: 8px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background: rgb(185, 185, 185);
+    }
+}
+
+.app-container {
+    height: 100%;
+    background-color: $primary-light;
+    .container {
+        padding: 10px 10% 20px 10%;
+    }
+    .no-account-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 50%;
+    }
+}
